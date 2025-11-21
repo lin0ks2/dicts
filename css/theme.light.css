@@ -835,7 +835,7 @@ body.modal-open { overflow: hidden;}
   border:1px solid var(--divider);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-1);
-  padding:12px 12px;     /* компактнее, чем 14px */}
+  padding:12px 10px;     /* компактнее, чем 14px */}
 /* ==========================================================
  * ЗОНА 1: Сеты
  * ========================================================== */
@@ -995,7 +995,7 @@ body.modal-open { overflow: hidden;}
  * Адаптив
  * ========================================================== */
 @media (max-width:480px){
-  .home .card{ padding:12px; border-radius: var(--radius-lg);}
+  .home .card{ padding:10px; border-radius: var(--radius-lg);}
   .home-trainer .trainer-word{ font-size:24px;}}
 /* Палитра (можешь подстроить 1 раз — всё остальное подтянется) */
 :root {
