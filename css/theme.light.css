@@ -894,24 +894,24 @@ body.modal-open { overflow: hidden;}
 .home-hints .hints-title{
   margin:0 0 6px;
   font-size:14px;
-  text-align: center;
+  text-align:center;
   font-weight:700;
-  opacity:.8;}
+  opacity:.8;
+}
 
+/* тело подсказки */
 .home-hints .hints-body{
   min-height:3.9em;                 /* «две строки» пустого места */
-  display:flex; align-items:center; justify-content:center;
-  text-align:center;
-  opacity:.75;
-  font-size:14px;
-  line-height:1.4;}
-
-/* --- Подсказка: пример использования слова --- */
-.home-hints .hints-body{
+  display:flex;
   align-items:flex-start;
   justify-content:flex-start;
   text-align:left;
+  opacity:.75;
+  font-size:14px;
+  line-height:1.4;
 }
+
+/* --- Подсказка: пример использования слова --- */
 
 .home-hints .hint-example{
   width:100%;
@@ -923,18 +923,22 @@ body.modal-open { overflow: hidden;}
   text-align:left;
 }
 
+/* Немецкий пример: чуть жирнее + кликабелен */
 .home-hints .hint-de{
   font-weight:600;
   margin-bottom:2px;
+  cursor:pointer;
 }
 
+/* Перевод по умолчанию скрыт */
 .home-hints .hint-tr{
   opacity:.9;
+  display:none;
 }
 
-.home-hints .hint-word{
-  font-weight:700;
-  color:var(--brand,#35b6ff);
+/* Когда показан */
+.home-hints .hint-tr.is-visible{
+  display:block;
 }
 /* ==========================================================
  * ЗОНА 3: Тренер
