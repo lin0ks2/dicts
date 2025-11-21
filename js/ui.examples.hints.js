@@ -1,9 +1,9 @@
 /* ==========================================================
  * Проект: MOYAMOVA
  * Файл: ui.examples.hints.js
- * Назначение: Вывод примера использования текущего слова
+ * Назначение: Пример использования текущего слова
  *            в зоне .home-hints под сетами
- * Версия: 1.0
+ * Версия: 1.2 (без подсветки формы слова)
  * Обновлено: 2025-11-21
  * ========================================================== */
 
@@ -31,50 +31,6 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
-  }
-
-  // Подсвечиваем целевое слово в немецком   // Подсвечиваем целевое слово в немецком примере
-  function highlightSentence(sentence, wordObj) {
-    if (!sentence) return '';
-    const raw = String(sentence);
-
-    // исходное немецкое слово из словаря
-    const w = wordObj && wordObj.word ? String(wordObj.word) : '';
-    const main = w.trim().split(/\s+/).pop(); // отбрасываем артикль у существительных
-    if (!main) return escapeHtml(raw);
-
-    // приводим к нижнему регистру и режем типичные окончания
-    let lemma = main.toLowerCase();
-    let stem = lemma;
-
-    if (stem.length > 4) {
-      if (/(en|er|es)$/.test(stem)) {
-        stem = stem.slice(0, -2);
-      } else if (/(e|n|s)$/.test(stem)) {
-        stem = stem.slice(0, -1);
-      }
-    }
-
-    if (!stem || stem.length < 3) {
-      return escapeHtml(raw);
-    }
-
-    // Ищем любое слово, начинающееся с этого ствола:
-    // nenn -> nennst, nennt, nennen, genannt и т.п.
-    const re = new RegExp('\\b' + stem + '\\w*', 'i');
-    const m = raw.match(re);
-    if (!m) return escapeHtml(raw);
-
-    const idx = m.index;
-    const match = m[0];
-    const before = raw.slice(0, idx);
-    const after  = raw.slice(idx + match.length);
-
-    return (
-      escapeHtml(before) +
-      '<span class="hint-word">' + escapeHtml(match) + '</span>' +
-      escapeHtml(after)
-    );
   }
 
   // Обеспечиваем наличие заголовка "Пример использования / Приклад вживання"
@@ -122,22 +78,42 @@
       ? (ex.uk || ex.ru || '')
       : (ex.ru || ex.uk || '');
 
-    const deHtml = highlightSentence(de, word);
+    // БЕЗ подсветки: просто аккуратно экранированный текст
+    const deHtml = escapeHtml(de);
     const trHtml = escapeHtml(tr);
 
+    // По умолчанию показываем только немецкий пример,
+    // перевод скрыт (CSS: display:none), кликом по примеру — показываем.
     body.innerHTML =
       '<div class="hint-example">' +
         '<p class="hint-de">' + deHtml + '</p>' +
-        (trHtml ? '<p class="hint-tr">' + trHtml + '</p>' : '') +
+        (trHtml
+          ? '<p class="hint-tr">' + trHtml + '</p>'
+          : '') +
       '</div>';
   }
 
   /* ----------------------------- Инициализация / подписки ----------------------------- */
 
+  // Клик по немецкому примеру — показать/скрыть перевод
+  function attachClickHandler() {
+    document.addEventListener('click', function (evt) {
+      const deEl = evt.target.closest('.hint-de');
+      if (!deEl) return;
+
+      const root = deEl.closest('.hint-example');
+      if (!root) return;
+
+      const trEl = root.querySelector('.hint-tr');
+      if (!trEl) return;
+
+      trEl.classList.toggle('is-visible');
+    });
+  }
+
   function setupObserver() {
     const wordEl = document.querySelector('.trainer-word');
     if (!wordEl || typeof MutationObserver === 'undefined') {
-      // хотя бы один раз попробуем отрисовать
       renderExampleHint();
       return;
     }
@@ -157,6 +133,8 @@
   }
 
   function init() {
+    attachClickHandler();
+
     // ждём появления trainer-word (home уже смонтирован и отрисован)
     if (document.querySelector('.trainer-word')) {
       setupObserver();
