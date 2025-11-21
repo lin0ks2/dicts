@@ -649,7 +649,7 @@ html[data-theme="dark"] :where(a,button,[role="button"],input,select,textarea,.b
 .home-hints .hint-de,
 .home-hints .hint-tr{
   margin:0;
-  text-align:left;
+  text-align:center;
 }
 
 /* Немецкий пример: чуть жирнее + кликабелен */
