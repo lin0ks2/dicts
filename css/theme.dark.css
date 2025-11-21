@@ -623,7 +623,7 @@ html[data-theme="dark"] :where(a,button,[role="button"],input,select,textarea,.b
 .home-hints .hints-title{
   margin:0 0 6px;
   font-size:14px;
-  text-align:center;
+  text-align:left;
   font-weight:700;
   opacity:.8;
 }
@@ -634,7 +634,7 @@ html[data-theme="dark"] :where(a,button,[role="button"],input,select,textarea,.b
   display:flex;
   align-items:flex-start;
   justify-content:flex-start;
-  text-align:left;
+  text-align:center;
   opacity:.75;
   font-size:14px;
   line-height:1.4;
