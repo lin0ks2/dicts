@@ -1,9 +1,9 @@
 /* ==========================================================
  * Проект: MOYAMOVA
  * Файл: ui.examples.hints.js
- * Назначение: Вывод примера использования текущего слова
+ * Назначение: Пример использования текущего слова
  *            в зоне .home-hints под сетами
- * Версия: 1.1
+ * Версия: 1.2 (без подсветки формы слова)
  * Обновлено: 2025-11-21
  * ========================================================== */
 
@@ -31,40 +31,6 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
-  }
-
-  // Экранируем для RegExp
-  function escapeRegExp(str) {
-    return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  }
-
-  // Подсвечиваем целевое слово в немецком примере (только точное совпадение леммы)
-  function highlightSentence(sentence, wordObj) {
-    if (!sentence) return '';
-    const raw = String(sentence);
-
-    // исходное немецкое слово из словаря
-    const w = wordObj && wordObj.word ? String(wordObj.word) : '';
-    const lemma = w.trim().split(/\s+/).pop(); // отбрасываем артикль у существительных
-    if (!lemma) return escapeHtml(raw);
-
-    const pattern = new RegExp('\\b' + escapeRegExp(lemma) + '\\b', 'i');
-    const m = raw.match(pattern);
-    if (!m) {
-      // если точного совпадения нет – просто вернём экранированный текст без подсветки
-      return escapeHtml(raw);
-    }
-
-    const idx = m.index;
-    const match = m[0];
-    const before = raw.slice(0, idx);
-    const after  = raw.slice(idx + match.length);
-
-    return (
-      escapeHtml(before) +
-      '<span class="hint-word">' + escapeHtml(match) + '</span>' +
-      escapeHtml(after)
-    );
   }
 
   // Обеспечиваем наличие заголовка "Пример использования / Приклад вживання"
@@ -112,10 +78,11 @@
       ? (ex.uk || ex.ru || '')
       : (ex.ru || ex.uk || '');
 
-    const deHtml = highlightSentence(de, word);
+    // БЕЗ подсветки: просто аккуратно экранированный текст
+    const deHtml = escapeHtml(de);
     const trHtml = escapeHtml(tr);
 
-    // ВАЖНО: по умолчанию показываем только немецкий пример,
+    // По умолчанию показываем только немецкий пример,
     // перевод скрыт (CSS: display:none), кликом по примеру — показываем.
     body.innerHTML =
       '<div class="hint-example">' +
