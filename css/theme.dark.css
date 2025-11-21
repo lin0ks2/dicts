@@ -623,7 +623,7 @@ html[data-theme="dark"] :where(a,button,[role="button"],input,select,textarea,.b
 .home-hints .hints-title{
   margin:0 0 6px;
   font-size:14px;
-  text-align:left;
+  text-align:left;      /* можно сделать center, если захочешь */
   font-weight:700;
   opacity:.8;
 }
@@ -674,6 +674,13 @@ html[data-theme="dark"] :where(a,button,[role="button"],input,select,textarea,.b
 .home-hints .hint-tr.is-visible{
   display:block;
 }
+
+/* Подсветка тренируемого слова */
+.home-hints .hint-word{
+  font-weight:700;
+  color:var(--brand,#35b6ff);
+}
+
 /* === MOYAMOVA modal (dark) === */
 .mm-modal-open { overflow: hidden; }
 
