@@ -3,7 +3,7 @@
  * Файл: ui.examples.hints.js
  * Назначение: Пример использования текущего слова
  *            в зоне .home-hints под сетами
- * Версия: 1.3 (глобальный observer, без подсветки форм)
+ * Версия: 1.5 (подсветка леммы, безопасный observer)
  * Обновлено: 2025-11-21
  * ========================================================== */
 
@@ -11,8 +11,6 @@
   'use strict';
 
   const A = (window.App = window.App || {});
-
-  let isRendering = false; // защита от циклов MutationObserver
 
   /* ----------------------------- Вспомогательные функции ----------------------------- */
 
@@ -33,6 +31,40 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
+  }
+
+  // Экранируем для RegExp
+  function escapeRegExp(str) {
+    return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  // Подсветка: ИЩЕМ только точное совпадение леммы (без угадывания форм)
+  function highlightSentence(sentence, wordObj) {
+    if (!sentence) return '';
+    const raw = String(sentence);
+
+    // исходное немецкое слово из словаря
+    const w = wordObj && wordObj.word ? String(wordObj.word) : '';
+    const lemma = w.trim().split(/\s+/).pop(); // отбрасываем артикль у существительных
+    if (!lemma) return escapeHtml(raw);
+
+    const re = new RegExp('\\b' + escapeRegExp(lemma) + '\\b', 'i');
+    const m = raw.match(re);
+    if (!m) {
+      // нет точного совпадения — просто возвращаем текст без подсветки
+      return escapeHtml(raw);
+    }
+
+    const idx = m.index;
+    const match = m[0];
+    const before = raw.slice(0, idx);
+    const after  = raw.slice(idx + match.length);
+
+    return (
+      escapeHtml(before) +
+      '<span class="hint-word">' + escapeHtml(match) + '</span>' +
+      escapeHtml(after)
+    );
   }
 
   // Обеспечиваем наличие заголовка "Пример использования / Приклад вживання"
@@ -56,54 +88,42 @@
   /* ----------------------------- Основной рендер ----------------------------- */
 
   function renderExampleHint() {
-    if (isRendering) return;
-    isRendering = true;
+    const section = document.querySelector('.home-hints');
+    const body = document.getElementById('hintsBody');
+    if (!section || !body) return;
 
-    try {
-      const section = document.querySelector('.home-hints');
-      const body = document.getElementById('hintsBody');
-      if (!section || !body) {
-        isRendering = false;
-        return;
-      }
+    ensureTitle(section);
 
-      ensureTitle(section);
-
-      const word = A.__currentWord;
-      if (!word || !Array.isArray(word.examples) || !word.examples.length) {
-        body.innerHTML = '';
-        isRendering = false;
-        return;
-      }
-
-      const ex = word.examples[0] || {};
-      const de = ex.L2 || ex.de || ex.deu || '';
-      if (!de) {
-        body.innerHTML = '';
-        isRendering = false;
-        return;
-      }
-
-      const uiLang = getUiLang();
-      const tr = (uiLang === 'uk')
-        ? (ex.uk || ex.ru || '')
-        : (ex.ru || ex.uk || '');
-
-      const deHtml = escapeHtml(de);
-      const trHtml = escapeHtml(tr);
-
-      // По умолчанию показываем только немецкий пример,
-      // перевод скрыт (CSS: display:none), кликом по примеру — показываем.
-      body.innerHTML =
-        '<div class="hint-example">' +
-          '<p class="hint-de">' + deHtml + '</p>' +
-          (trHtml
-            ? '<p class="hint-tr">' + trHtml + '</p>'
-            : '') +
-        '</div>';
-    } finally {
-      isRendering = false;
+    const word = A.__currentWord;
+    if (!word || !Array.isArray(word.examples) || !word.examples.length) {
+      body.innerHTML = '';
+      return;
     }
+
+    const ex = word.examples[0] || {};
+    const de = ex.L2 || ex.de || ex.deu || '';
+    if (!de) {
+      body.innerHTML = '';
+      return;
+    }
+
+    const uiLang = getUiLang();
+    const tr = (uiLang === 'uk')
+      ? (ex.uk || ex.ru || '')
+      : (ex.ru || ex.uk || '');
+
+    const deHtml = highlightSentence(de, word);
+    const trHtml = escapeHtml(tr);
+
+    // По умолчанию показываем только немецкий пример,
+    // перевод скрыт (CSS: display:none), кликом по примеру — показываем.
+    body.innerHTML =
+      '<div class="hint-example">' +
+        '<p class="hint-de">' + deHtml + '</p>' +
+        (trHtml
+          ? '<p class="hint-tr">' + trHtml + '</p>'
+          : '') +
+      '</div>';
   }
 
   /* ----------------------------- Инициализация / подписки ----------------------------- */
@@ -124,15 +144,25 @@
     });
   }
 
-  // Глобальный observer: следим за тем, появилось ли на экране
-  // комбо "home-hints + trainer-word + App.__currentWord"
+  // Наблюдаем за DOM:
+  // как только появляется home-hints + trainer-word + App.__currentWord,
+  // и внутри hintsBody ещё НЕТ .hint-example — рисуем подсказку.
   function setupGlobalObserver() {
-    const observer = new MutationObserver(function () {
-      const hasHome = document.querySelector('.home-hints');
-      const trainer = document.querySelector('.trainer-word');
-      if (!hasHome || !trainer || !A.__currentWord) return;
+    if (typeof MutationObserver === 'undefined') {
+      // старая среда — хотя бы один раз попробуем
+      renderExampleHint();
+      return;
+    }
 
-      // как только все три сущности на месте — перерисовываем подсказку
+    const observer = new MutationObserver(function () {
+      const section = document.querySelector('.home-hints');
+      const trainer = document.querySelector('.trainer-word');
+      const body = document.getElementById('hintsBody');
+      if (!section || !trainer || !body || !A.__currentWord) return;
+
+      // если подсказка уже отрисована — ничего не делаем, чтобы не зациклиться
+      if (body.querySelector('.hint-example')) return;
+
       renderExampleHint();
     });
 
@@ -141,7 +171,7 @@
       subtree: true
     });
 
-    // первый рендер на стартовом экране
+    // первый рендер (если домашний уже смонтирован к этому моменту)
     renderExampleHint();
   }
 
