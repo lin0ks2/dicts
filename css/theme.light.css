@@ -839,24 +839,42 @@ body.modal-open { overflow: hidden;}
 /* ==========================================================
  * ЗОНА 1: Сеты
  * ========================================================== */
+.home-sets.card{
+  text-align:center;
+}
 
-.home-sets.card{ text-align:center;}
-
+/* шапка сетов: заголовок слева, флаг справа */
 .home-sets .sets-header{
-  display:flex; align-items:center; justify-content:center;
-  gap:6px; margin-bottom:6px;}
+  display:flex;
+  align-items:center;
+  justify-content:flex-start; /* выравниваем по левому краю */
+  gap:6px;
+  margin-bottom:6px;
+}
 
-.home-sets .flag{ font-size:16px; line-height:1;}
+.home-sets .flag{
+  font-size:16px;
+  line-height:1;
+  margin-left:auto;          /* прижимает флаг вправо */
+}
 
 .home-sets .sets-title{
-  font-size:14px; font-weight:700; margin:0; opacity:.85;}
+  font-size:14px;
+  font-weight:700;
+  margin:0;
+  opacity:.85;
+  text-align:left;           /* как у "Пример" */
+  flex:1;                    /* занимает всё доступное место слева */
+}
+
 /* 10 квадратиков в ряд, сами держат квадратное соотношение */
 .home-sets .sets-grid{
   --sets-gap:8px;
   display:grid; grid-template-columns:repeat(10, 1fr);
   gap:var(--sets-gap);
   justify-content:center;
-  margin:6px 0 10px;}
+  margin:6px 0 10px;
+}
 
 .set-pill{
   aspect-ratio:1/1;
@@ -869,24 +887,28 @@ body.modal-open { overflow: hidden;}
   font-size:clamp(10px, 2vw, 12px);
   line-height:1;
   color:var(--text);
-  transition:box-shadow .2s ease, border-color .2s ease, background .2s ease;}
+  transition:box-shadow .2s ease, border-color .2s ease, background .2s ease;
+}
 
 .set-pill.is-done{
   background:var(--brand-tint, #d5f3ff);
   border-color:var(--brand, #35b6ff);
-  color:#1a7abf;}
+  color:#1a7abf;
+}
 
 .set-pill.is-active{
   background:var(--surface-1);
   border-color:var(--brand, #35b6ff);
   /* если color-mix не поддерживается — игнорируется */
-  box-shadow:0 0 0 2px color-mix(in srgb, var(--brand) 25%, transparent);}
+  box-shadow:0 0 0 2px color-mix(in srgb, var(--brand) 25%, transparent);
+}
 
 .home-sets .sets-stats{
   font-size:14px;
   opacity:.7;
   text-align:center;
-  margin-top:4px;}
+  margin-top:4px;
+}
 /* ==========================================================
  * ЗОНА 2: Подсказки
  * ========================================================== */
