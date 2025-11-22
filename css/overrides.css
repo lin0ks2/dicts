@@ -36,3 +36,11 @@
     padding-bottom: calc(var(--footer-h-actual, 60px) + 18px);
   }
 }
+
+.home-sets.card{
+  padding-bottom:6px;
+}
+
+.home-trainer.card{
+  padding-bottom:6px;
+}
