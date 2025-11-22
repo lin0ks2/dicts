@@ -85,32 +85,36 @@
     document.body.classList.remove("no-scroll");
   }
 
-  /** Делаем ссылкой фразу в мастере */
+  /** Делаем ссылкой фразу "условия использования"/"умови використання" в мастере */
   function enhanceTermsLink() {
-    // Ищем конкретно тот span, который мы пометили классом
+    // Ищем конкретно тот span, который мы пометили классом в ui.setup.modal.js
     var el = document.querySelector('.onboarding-terms-text');
     if (!el) return;
 
-    // Уже делали замену — выходим
+    // Уже обрабатывали — выходим
     if (el.dataset.legalEnhanced === '1') return;
 
-    var lang   = getUiLang();
-    var phrase = (lang === 'uk') ? 'умови використання' : 'условия использования';
+    var html = el.innerHTML;
+    var originalHtml = html;
 
-    var text = el.textContent || '';
-    if (text.indexOf(phrase) === -1) {
-      // на всякий случай: если по каким-то причинам текст отличается
+    // Оборачиваем русскую фразу, если есть
+    html = html.replace(
+      'условия использования',
+      '<button type="button" class="legal-inline-link" data-legal-link="1">условия использования</button>'
+    );
+
+    // Оборачиваем украинскую фразу, если есть
+    html = html.replace(
+      'умови використання',
+      '<button type="button" class="legal-inline-link" data-legal-link="1">умови використання</button>'
+    );
+
+    // Если ни одна из фраз не нашлась — ничего не делаем
+    if (html === originalHtml) {
       return;
     }
 
-    // Заменяем только нужный кусок на кнопку-ссылку
-    el.innerHTML = text.replace(
-      phrase,
-      '<button type="button" class="legal-inline-link" data-legal-link="1">' +
-        phrase +
-      '</button>'
-    );
-
+    el.innerHTML = html;
     el.dataset.legalEnhanced = '1';
 
     var link = el.querySelector('[data-legal-link]');
@@ -121,7 +125,6 @@
       });
     }
   }
-
   /** Наблюдатель — перезапуск при показе мастера */
   function setupObserver() {
     // Следим за изменениями DOM, чтобы поймать момент появления мастера
