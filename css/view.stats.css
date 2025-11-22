@@ -57,7 +57,7 @@
 .stats-pages {
   position: relative;
   flex: 1 1 auto;
-  min-height: 420px; /* фиксированное место под контент, чтобы не прыгало */
+  min-height: 220px; /* фиксированное место под контент, чтобы не прыгало */
   overflow: hidden;
 }
 
@@ -101,7 +101,7 @@
 }
 
 .stats-page-dot {
-  width: 6px;
+  width: 18px;
   height: 6px;
   border-radius: 999px;
   border: none;
@@ -112,7 +112,8 @@
 }
 
 .stats-page-dot.is-active {
-  width: 16px;
+  width: 36px;
+  height: 6px;
   opacity: 1;
   background: var(--brand, #35b6ff);
 }
