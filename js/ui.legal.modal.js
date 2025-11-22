@@ -87,36 +87,58 @@
 
   /** Делаем ссылкой фразу в мастере */
   function enhanceTermsLink() {
-    const root = document.querySelector(".onboarding-step");
-    if (!root) return;
-
-    const lang = getUiLang();
-    const phrase = lang === "uk" ? "умови використання" : "условия использования";
-
-    const el = root.querySelector(".onboarding-terms-text");
+    // Ищем конкретно тот span, который мы пометили классом
+    var el = document.querySelector('.onboarding-terms-text');
     if (!el) return;
 
-    // Уже заменено → выходим
-    if (el.dataset.enhanced) return;
+    // Уже делали замену — выходим
+    if (el.dataset.legalEnhanced === '1') return;
 
-    el.innerHTML = el.textContent.replace(
+    var lang   = getUiLang();
+    var phrase = (lang === 'uk') ? 'умови використання' : 'условия использования';
+
+    var text = el.textContent || '';
+    if (text.indexOf(phrase) === -1) {
+      // на всякий случай: если по каким-то причинам текст отличается
+      return;
+    }
+
+    // Заменяем только нужный кусок на кнопку-ссылку
+    el.innerHTML = text.replace(
       phrase,
-      `<button type="button" class="legal-inline-link">${phrase}</button>`
+      '<button type="button" class="legal-inline-link" data-legal-link="1">' +
+        phrase +
+      '</button>'
     );
 
-    el.dataset.enhanced = "1";
+    el.dataset.legalEnhanced = '1';
 
-    el.querySelector(".legal-inline-link").addEventListener("click", openModal);
+    var link = el.querySelector('[data-legal-link]');
+    if (link) {
+      link.addEventListener('click', function (evt) {
+        evt.preventDefault();
+        openModal();
+      });
+    }
   }
 
   /** Наблюдатель — перезапуск при показе мастера */
   function setupObserver() {
-    const obs = new MutationObserver(() => enhanceTermsLink());
-    obs.observe(document.body, { childList: true, subtree: true });
+    // Следим за изменениями DOM, чтобы поймать момент появления мастера
+    var obs = new MutationObserver(function () {
+      enhanceTermsLink();
+    });
+
+    obs.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    // Попробуем сразу — если мастер уже открыт
     enhanceTermsLink();
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener('DOMContentLoaded', function () {
     setupObserver();
   });
 })();
