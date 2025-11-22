@@ -11,6 +11,12 @@
   margin-top: 8px;
 }
 
+/* Тело карточки с кругами/страницами */
+.stats-lang-card__body {
+  padding: 8px 10px 12px;
+  min-height: 420px;     /* фиксируем минимальную высоту карточки */
+}
+
 /* Список языков (карточки) */
 .stats-lang-list {
   margin-top: 4px;
