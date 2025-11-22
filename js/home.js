@@ -319,9 +319,9 @@ function activeDeckKey() {
         <!-- ЗОНА 1: Сеты -->
         <section class="card home-sets">
           <header class="sets-header">
-            <span class="flag" aria-hidden="true">${flag}</span>
-            <h2 class="sets-title">${title}</h2>
-          </header>
+  <h2 class="sets-title">${title}</h2>
+  <span class="flag" aria-hidden="true">${flag}</span>
+</header>
           <div class="sets-viewport" id="setsViewport">
             <div class="sets-grid" id="setsBar"></div>
           </div>
