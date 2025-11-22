@@ -2,7 +2,7 @@
    Проект: MOYAMOVA
    Файл: view.stats.css
    Назначение: Стили экрана статистики
-   Версия: 1.1 (трёхэкранная статистика + крупный индикатор)
+   Версия: 1.2 (3 экрана + крупный индикатор, круги как в старой версии)
    Обновлено: 2025-11-21
    ========================================================== */
 
@@ -101,8 +101,8 @@
 }
 
 .stats-page-dot {
-  width: 32px;
-  height: 12px;
+  width: 22px;
+  height: 7px;
   border-radius: 999px;
   border: none;
   padding: 0;
@@ -112,8 +112,8 @@
 }
 
 .stats-page-dot.is-active {
-  width: 52px;
-  height: 12px;
+  width: 44px;
+  height: 7px;
   opacity: 1;
   background: var(--brand, #35b6ff);
 }
@@ -132,21 +132,16 @@
   gap: 8px;
 }
 
-/* Визуальный круг-набор — общий размер для всех страниц */
+/* Визуальный круг-набор — как в старой версии */
 .stats-ring-set__circle {
   position: relative;
   margin: 0 auto;
-  width: min(100%, 360px);   /* единый размер для core/other */
+  max-width: 260px;   /* общий диаметр для всех кругов */
+  width: 100%;
   aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-/* На всякий случай закрепляем тот же размер и для модификаторов */
-.stats-ring-set--core  .stats-ring-set__circle,
-.stats-ring-set--other .stats-ring-set__circle {
-  width: min(100%, 360px);
 }
 
 /* Внутренний контейнер для слоёв-колец */
@@ -255,7 +250,7 @@
 /* Верхний набор колец (Основные части речи) — легенда в одну колонку и центр */
 .stats-ring-set--core .stats-ring-legend {
   grid-template-columns: 1fr;
-  max-width: 360px;
+  max-width: 260px; /* как в старой версии */
   margin: 0 auto;
 }
 
